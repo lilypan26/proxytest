@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 set -x
-
-export GROUP="lilypan-rg"
-export LOCATION="eastus"
-
 set -uo pipefail
 
 HOST="10.42.3.5"
@@ -27,12 +23,12 @@ jq --arg cert "$(cat squidc.pem | base64 -w 0)" '.trustedCa=$cert' newhttpproxyc
 # otherwise the VM will not present a cert with correct hostname
 # else, change the cert to have the correct hostname (harder)
 az vm create \
-    --resource-group=${GROUP} \
+    --resource-group=${RESOURCE_GROUP} \
     --name=cli-proxy-vm2 \
     --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
-    --ssh-key-values /home/lpan/.ssh/id_rsa.pub \
+    --generate-ssh-keys \
     --public-ip-address "" \
     --custom-data ./setup_out.sh \
-    --vnet-name=${GROUP}-vnet \
+    --vnet-name=${RESOURCE_GROUP}-vnet \
     --subnet proxy-subnet \
     --private-ip-address $HOST
