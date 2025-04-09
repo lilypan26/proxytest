@@ -14,9 +14,9 @@ basicConstraints=CA:TRUE,pathlen:0
 
 openssl req -config <(echo "$CONFIG") -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout squidk.pem -out squidc.pem -subj "/CN=${HOST}" -addext "subjectAltName=IP:${HOST},DNS:cli-proxy-vm" -addext "basicConstraints=critical,CA:TRUE,pathlen:0" -addext "keyUsage=critical,keyCertSign,cRLSign,keyEncipherment,encipherOnly,decipherOnly,digitalSignature,nonRepudiation" -addext "extendedKeyUsage=clientAuth,serverAuth"
 
-sed "s/<<CACERT>>/$(cat squidc.pem | base64 -w 0)/g" setup_new_proxy.sh | sponge setup_out.sh
-sed "s/<<CAKEY>>/$(cat squidk.pem | base64 -w 0)/" setup_out.sh | sponge setup_out.sh
-jq --arg cert "$(cat squidc.pem | base64 -w 0)" '.trustedCa=$cert' newhttpproxyconfig.json | sponge newhttpproxyconfig.json
+sed "s/<<CACERT>>/$(cat squidc.pem | base64 -w 0)/g" setup_new_proxy.sh > setup_new_proxy.sh.tmp && mv setup_new_proxy.sh.tmp setup_out.sh
+sed "s/<<CAKEY>>/$(cat squidk.pem | base64 -w 0)/" setup_out.sh > setup_out.sh.tmp && mv setup_out.sh.tmp setup_out.sh
+jq --arg cert "$(cat squidc.pem | base64 -w 0)" '.trustedCa=$cert' newhttpproxyconfig.json > newhttpproxyconfig.json.tmp && mv newhttpproxyconfig.json.tmp newhttpproxyconfig.json
 
 
 # name below MUST match the name used in testcerts for httpproxyconfig.json.
